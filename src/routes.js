@@ -106,4 +106,27 @@ router.post("/login", middleware.validateUserData, (req, res) => {
   );
 });
 
+router.post("/book", middleware.isLoggedIn, (req, res) => {
+  console.log(req.headers.authorization);
+  if (req.body.author && req.body.title) {
+    con.query(
+      `INSERT INTO books (user_id, author, title) VALUES (${
+        req.body.user_id
+      }, ${mysql.escape(req.body.author)}, ${mysql.escape(req.body.title)})`,
+      (err) => {
+        if (err) {
+          console.log(err);
+          return res
+            .status(400)
+            .json({ msg: "Internal server error gathering book details" });
+        } else {
+          return res
+            .status(200)
+            .json({ msg: "Book has been added successfully" });
+        }
+      }
+    );
+  }
+});
+
 module.exports = router;
